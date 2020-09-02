@@ -33,6 +33,10 @@ body {
   stroke-width: .5px;
 }
 
+.g {
+    fill:#fff;
+}
+
 </style>
 <body>
 <script src="http://d3js.org/d3.v3.min.js"></script>
@@ -92,28 +96,45 @@ d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/world-110m.j
       .attr("d", path);
 });
 
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/pop_places_reproj.json", function(error, data) {
-    svg.append("path")
-    .datum(data)
-    .classed("geopath", true)
-    .attr("d", path)
+/* d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/pop_places.json", function(error, data) {
+    svg.append("g")
+    .selectAll("g")
+    .data(data.features)
+    .enter()
+      .append("g")
+      .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+      .append("circle")
+      .attr("r", 1)
+      .style('fill', 'white')
+}); */
+
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/pop_places.json", function(error, data) {
+ /* Define the data for the circles */
+ var elem = svg.selectAll("g")
+        .data(data.features)
+
+    /*Create and place the "blocks" containing the circle and the text */  
+    var elemEnter = elem.enter()
+        .append("g")
+        .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+
+    /*Create the circle for each block */
+    var circle = elemEnter.append("circle")
+        .attr("r", 1)
+        .attr("stroke","black")
+        .attr("fill", "white")
+
+    /* Create the text for each block */
+    elemEnter.append("text")
+        .attr("dx", function(d){return -1})
+        .text(function(d){return d.properties.name})
+        .attr("font-family", "sans-serif")
+        .attr("font-size", "8px")
+
 });
 
 d3.select(self.frameElement).style("height", height + "px");
 
 
-function saveSvg(svgEl, name) {
-    svgEl.setAttribute("xmlns", "http://www.w3.org/2000/svg");
-    var svgData = svgEl.outerHTML;
-    var preface = '<?xml version="1.0" standalone="no"?>\r\n';
-    var svgBlob = new Blob([preface, svgData], {type:"image/svg+xml;charset=utf-8"});
-    var svgUrl = URL.createObjectURL(svgBlob);
-    var downloadLink = document.createElement("a");
-    downloadLink.href = svgUrl;
-    downloadLink.download = name;
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    document.body.removeChild(downloadLink);
-}
 
 </script>
