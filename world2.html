@@ -107,7 +107,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json", functio
       .attr("d", path);
 });
 
-d3.json("https://gist.githubusercontent.com/hrbrmstr/91ea5cc9474286c72838/raw/59421ff9b268ff0929b051ddafafbeb94a4c1910/continents.json", function(error, data) {
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_sf.geojson", function(error, data) {
   svg.append("path")
       .data(data.features)
       .attr("class", "eubox")

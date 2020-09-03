@@ -38,11 +38,17 @@ locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
   mutate(map_num = 1:nrow(.))
 # preview
 leaflet() %>% addTiles() %>% 
+  addPolygons(data=continents,
+             label=~CONTINENT)
   addMarkers(data=st_transform(locs2020sf,4326),
              label=~loc)
 # get eu bounding box
 euBbox <- locs2020sf %>% filter(CONTINENT == 'Europe') %>% 
-  st_bbox() %>% st_as_sfc() %>% st_sf() %>% st_reverse() # reverse so d3 reads correctly!
+  st_bbox() %>% st_as_sfc() %>% 
+  st_segmentize(10) %>%   
+  st_sf() %>% 
+  st_reverse() # reverse so d3 reads correctly!
+
 # export to json
 st_write(euBbox, 
          dsn='eu_bbox_sf.geojson',
