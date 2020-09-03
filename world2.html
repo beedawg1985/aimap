@@ -100,28 +100,6 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json", functio
       .attr("d", path);
 });
 
-// d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/pop_places_200rec.json", function(error, data) {
-//  /* Define the data for the circles */
-//  var elem = svg.selectAll("g")
-//         .data(data.features)
-
-//     /*Create and place the "blocks" containing the circle and the text */  
-//     var elemEnter = elem.enter()
-//         .append("g")
-//         .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
-
-//     /*Create the circle for each block */
-//     var circle = elemEnter.append("circle")
-//         .attr("r", 1)
-//         .attr("fill", "white")
-
-//     /* Create the text for each block */
-//     elemEnter.append("text")
-//         .attr("dx", function(d){return -1})
-//         .text(function(d){return d.properties.name})
-//         .attr("font-family", "sans-serif")
-//         .attr("font-size", "8px")
-// });
 
 d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geojson", function(error, data) {
  /* Define the data for the circles */
@@ -140,15 +118,8 @@ d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geo
 
     /* Create the text for each block */
     elemEnter.append("text")
-    .attr("dx", function(d){return -2})
-    .attr("dy", function(d){return +2})
-    .text(function(d){return d.properties.map_num})
-    .attr("font-family", "sans-serif")
-    .attr("font-size", "9px")
-    .attr("fill", "black")
-
-    elemEnter.append("text")
-        .attr("dx", function(d){return -1})
+        .attr("dx", function(d){return -2})
+        .attr("dy", function(d){return -2})
         .text(function(d){return d.properties.map_num})
         .attr("font-family", "sans-serif")
         .attr("font-size", "9px")
