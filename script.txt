@@ -1,0 +1,15 @@
+
+shp2json /Users/user/Downloads/ne_10m_graticules_all/ne_10m_graticules_5.shp -o grat5.json
+geoproject 'd3.geoPolyhedralWaterman().fitSize([1080, 1080], d)' < grat5.json > grat5_m.json
+geo2svg -w 1080 -h 1080 < grat5_m.json > grat5_m.json.svg 
+
+
+shp2json /Users/user/Documents/Archaeology\ International/2020/Map/TM_WORLD_BORDERS-0.3/TM_WORLD_BORDERS-0.3.shp -o world.json
+geoproject 'd3.geoPolyhedralWaterman().fitSize([1080, 1080], d)' < world.json > world_m.json
+geo2svg -w 1080 -h 1080 < world_m.json > world_m.json.svg 
+
+
+shp2json /Users/user/Downloads/ne_10m_populated_places_simple/ne_10m_populated_places_simple.shp -o pop_places.json
+geoproject 'd3.geoPolyhedralWaterman().fitSize([960, 550], d)' < pop_places.json > pop_places_reproj.json
+
+geoproject 'd3.geoPolyhedralWaterman().fitSize([960, 960], d)' < wrld.json > wlrdm_pol.json
