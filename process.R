@@ -42,11 +42,12 @@ leaflet() %>% addTiles() %>%
              label=~loc)
 # get eu bounding box
 euBbox <- locs2020sf %>% filter(CONTINENT == 'Europe') %>% 
-  st_bbox() %>% st_as_sfc() %>% st_sf()
+  st_bbox() %>% st_as_sfc() %>% st_sf() %>% st_reverse() # reverse so d3 reads correctly!
 # export to json
 st_write(euBbox, 
-         dsn='eu_bbox.geojson',
+         dsn='eu_bbox_sf.geojson',
          delete_dsn = T)
+
 ## vertices of bbox need to be manually reversed !!
 
 st_write(locs2020sf %>% filter(CONTINENT != 'Europe'), 
