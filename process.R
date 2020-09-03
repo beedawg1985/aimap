@@ -28,8 +28,13 @@ locs2020mod <- read.csv('locs2020geo_mod.csv') %>%
   mutate(lon = as.numeric(lon),
          lat = as.numeric(lat))
 locs2020noPoint <- locs2020mod %>% filter(is.na(lat))
+# load continents
+
+continents <- st_read('https://gist.githubusercontent.com/hrbrmstr/91ea5cc9474286c72838/raw/59421ff9b268ff0929b051ddafafbeb94a4c1910/continents.json')
 locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
   st_as_sf(coords=c('lon','lat'), crs=4326) %>% 
+  st_join(continents) %>% 
+  arrange(CONTINENT) %>% 
   mutate(map_num = 1:nrow(.))
 # preview
 leaflet() %>% addTiles() %>% 
@@ -37,5 +42,6 @@ leaflet() %>% addTiles() %>%
              label=~loc)
 # export to json?
 
-st_write(locs2020sf, dsn='locs2020.geojson')
+st_write(locs2020sf, dsn='locs2020.geojson',
+         delete_dsn = T)
 
