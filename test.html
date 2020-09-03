@@ -1,0 +1,39 @@
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="http://d3js.org/d3.geo.polyhedron.v0.min.js"></script>
+<script src="http://d3js.org/topojson.v1.min.js"></script>
+<body>
+<script>
+
+var width = 960;
+var height = 500;
+
+var svg = d3.select("body").append("svg")
+  .attr("width", height)
+  .attr("height", width);
+  
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox.geojson", function(error,data) {
+	if(error) throw error;
+	
+    var projection = d3.geo.polyhedron.waterman()
+    .rotate([20, 0])
+    // .scale(118)
+    .scale(200)
+    .translate([width / 2, height / 2])
+    .precision(.1);
+	  
+  var path = d3.geo.path().projection(projection);
+	
+  svg.selectAll()
+    .data([data])
+    .enter()
+    .append("path")
+    .attr("d", path)
+    .attr("fill","green");
+	
+	
+	
+})
+
+
+
+</script>
