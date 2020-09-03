@@ -40,8 +40,19 @@ locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
 leaflet() %>% addTiles() %>% 
   addMarkers(data=st_transform(locs2020sf,4326),
              label=~loc)
-# export to json?
+# get eu bounding box
+euBbox <- locs2020sf %>% filter(CONTINENT == 'Europe') %>% 
+  st_bbox() %>% st_as_sfc() %>% st_sf()
+# export to json
+st_write(euBbox, 
+         dsn='eu_bbox.geojson',
+         delete_dsn = T)
+## vertices of bbox need to be manually reversed !!
 
-st_write(locs2020sf, dsn='locs2020.geojson',
+st_write(locs2020sf %>% filter(CONTINENT != 'Europe'), 
+         dsn='locs2020_rw.geojson',
+         delete_dsn = T)
+st_write(locs2020sf %>% filter(CONTINENT == 'Europe'), 
+         dsn='locs2020_eu.geojson',
          delete_dsn = T)
 
