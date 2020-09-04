@@ -36,22 +36,27 @@ locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
   st_join(continents) %>% 
   arrange(CONTINENT) %>% 
   mutate(map_num = 1:nrow(.))
-# preview
-leaflet() %>% addTiles() %>% 
-  addPolygons(data=continents,
-             label=~CONTINENT)
-  addMarkers(data=st_transform(locs2020sf,4326),
-             label=~loc)
+
 # get eu bounding box
 euBbox <- locs2020sf %>% filter(CONTINENT == 'Europe') %>% 
   st_bbox() %>% st_as_sfc() %>% 
-  st_segmentize(10) %>%   
-  st_sf() %>% 
-  st_reverse() # reverse so d3 reads correctly!
+  st_transform(3857) %>% 
+  st_cast('LINESTRING') %>% 
+  st_line_sample(200) %>% 
+  st_cast('POINT') %>% 
+  st_transform(4326)
+  # st_sf() %>% 
+  # st_reverse() # reverse so d3 reads correctly!
+plot(euBbox)
+# preview
+leaflet() %>% addTiles() %>% 
+  addMarkers(data=euBbox)
+  # addMarkers(data=st_transform(locs2020sf,4326),
+  #            label=~loc)
 
 # export to json
 st_write(euBbox, 
-         dsn='eu_bbox_sf.geojson',
+         dsn='eu_bbox_points.geojson',
          delete_dsn = T)
 
 ## vertices of bbox need to be manually reversed !!

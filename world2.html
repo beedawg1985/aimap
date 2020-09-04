@@ -107,13 +107,13 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json", functio
       .attr("d", path);
 });
 
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_sf.geojson", function(error, data) {
-  svg.append("path")
-      .data(data.features)
-      .attr("class", "eubox")
-      // .attr("clip-path", "url(#clip)")
-      .attr("d", path)
-});
+// d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_sf.geojson", function(error, data) {
+//   svg.append("path")
+//       .data(data.features)
+//       .attr("class", "eubox")
+//       // .attr("clip-path", "url(#clip)")
+//       .attr("d", path)
+// });
 
 
 d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geojson", function(error, data) {
@@ -139,6 +139,26 @@ d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geo
         .attr("font-family", "sans-serif")
         .attr("font-size", "9px")
         .attr("fill", "white")
+
+});
+
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_points.geojson", function(error, data) {
+ /* Define the data for the circles */
+ var elem = svg.selectAll("g")
+        .data(data.features)
+
+    /*Create and place the "blocks" containing the circle and the text */  
+    var elemEnter = elem.enter()
+        .append("g")
+        .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
+
+    /*Create the circle for each block */
+    var circle = elemEnter.append("rect")
+                            .attr("x", 0)
+                             .attr("y", 0)
+                            .attr("width", 3)
+                            .attr("height", 3)
+                            .attr("fill","red")
 
 });
 
