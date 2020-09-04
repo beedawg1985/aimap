@@ -62,11 +62,12 @@ st_write(euBbox,
          delete_dsn = T)
 
 ## vertices of bbox need to be manually reversed !!
-
-st_write(locs2020sf %>% filter(CONTINENT != 'Europe'), 
-         dsn='locs2020_rw.geojson',
+euBboxPol <- st_read('w_eu.gpkg')
+locs2020sf_weu <- st_intersection(locs2020sf, euBboxPol)
+st_write(locs2020sf_weu, 
+         dsn='locs2020_weu.geojson',
          delete_dsn = T)
-st_write(locs2020sf %>% filter(CONTINENT == 'Europe'), 
-         dsn='locs2020_eu.geojson',
+st_write(locs2020sf %>% filter(map_num %!in% locs2020sf_weu$map_num), 
+         dsn='locs2020_rw.geojson',
          delete_dsn = T)
 
