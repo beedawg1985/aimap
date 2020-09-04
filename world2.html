@@ -119,7 +119,7 @@ d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json", functio
 d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geojson", function(error, data) {
  /* Define the data for the circles */
  var elem = svg.selectAll("g")
-        .data(data.features)
+        .data(data.features, function(d){return d;})
 
     /*Create and place the "blocks" containing the circle and the text */  
     var elemEnter = elem.enter()
@@ -142,18 +142,18 @@ d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geo
 
 });
 
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_points.geojson", function(error, data) {
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_points200.geojson", function(error, data) {
  /* Define the data for the circles */
- var elem = svg.selectAll("g")
-        .data(data.features)
+ var eu = svg.selectAll("g")
+        .data(data.features, function(d){return d;})
 
     /*Create and place the "blocks" containing the circle and the text */  
-    var elemEnter = elem.enter()
+    var euEnter = eu.enter()
         .append("g")
         .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
 
     /*Create the circle for each block */
-    var circle = elemEnter.append("rect")
+    var circle = euEnter.append("rect")
                             .attr("x", 0)
                             .attr("y", 0)
                             .attr("width", 3)
