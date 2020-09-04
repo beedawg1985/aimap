@@ -142,10 +142,10 @@ d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020.geo
 
 });
 
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/eu_bbox_points200.geojson", function(error, data) {
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/weu.geojson", function(error, data) {
  /* Define the data for the circles */
  var eu = svg.selectAll("g")
-        .data(data.features)
+        .data(data.features, function(d){return d.properties.new_id;})
 
     /*Create and place the "blocks" containing the circle and the text */  
     var euEnter = eu.enter()
