@@ -38,10 +38,10 @@ locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
   mutate(map_num = 1:nrow(.))
 
 # get eu bounding box
-euBbox <- continents %>% filter(CONTINENT == 'Europe') %>% 
-  st_bbox() %>% st_as_sfc() %>% 
-  st_transform(3857) %>% 
+euBbox <- st_read('w_eu.gpkg') %>% 
+  st_cast('MULTILINESTRING') %>% 
   st_cast('LINESTRING') %>% 
+  st_transform(3857) %>% 
   st_line_sample(200) %>% 
   st_cast('POINT') %>% 
   st_transform(4326) %>% 
@@ -58,7 +58,7 @@ leaflet() %>% addTiles() %>%
 
 # export to json
 st_write(euBbox, 
-         dsn='eu_bbox_points200.geojson',
+         dsn='weu.geojson',
          delete_dsn = T)
 
 ## vertices of bbox need to be manually reversed !!
