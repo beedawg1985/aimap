@@ -63,10 +63,11 @@ var width = 1920,
     height = 1100;
 
 var projection = d3.geo.polyhedron.waterman()
+// var projection = d3.geo.mercator()
     .rotate([20, 0])
     // .scale(118)
-    .scale(200)
-    .translate([width / 2, height / 2])
+    .scale(1200)
+    .translate([width / 3, height / 3])
     .precision(.1);
 
 var path = d3.geo.path()
@@ -99,41 +100,16 @@ svg.append("use")
     .attr("class", "fill")
     .attr("xlink:href", "#sphere");
 
-svg.append("path")
-    .datum(graticule)
-    .attr("class", "graticule")
-    .attr("clip-path", "url(#clip)")
-    .attr("d", path);
-
-d3.json("https://cdn.jsdelivr.net/npm/world-atlas@2/countries-50m.json", function(error, world) {
-  svg.insert("path", ".graticule")
-      .datum(topojson.feature(world, world.objects.land))
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/countries-50m_int.geojson", function(error, data) {
+  svg.append("path")
+      .data(data.features)
       .attr("class", "land")
       .attr("clip-path", "url(#clip)")
-      .attr("d", path);
+      .attr("d", path)
+      .attr("zoom", 1.5)
 });
 
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/weu.geojson", function(error, data) {
- /* Define the data for the circles */
- var eu = svg.selectAll("g")
-        .data(data.features, function(d){return d.properties.new_id;})
-
-    /*Create and place the "blocks" containing the circle and the text */  
-    var euEnter = eu.enter()
-        .append("g")
-        .attr("transform", function(d) { return "translate(" + projection(d.geometry.coordinates) + ")"; })
-
-    /*Create the circle for each block */
-    var circle = euEnter.append("rect")
-                            .attr("x", 0)
-                            .attr("y", 0)
-                            .attr("width", 3)
-                            .attr("height", 3)
-                            .attr("fill","red")
-
-});
-
-d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020_rw.geojson", function(error, data) {
+d3.json("https://raw.githubusercontent.com/beedawg1985/aimap/master/locs2020_weu.geojson", function(error, data) {
  /* Define the data for the circles */
  var elem = svg.selectAll("g")
         .data(data.features)
