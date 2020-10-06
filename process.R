@@ -7,7 +7,7 @@ require(dplyr)
 require(ggmap)
 require(sf)
 require(leaflet)
-setwd('/Users/user/Documents/GitHub/aimap')
+# setwd('/Users/user/Documents/GitHub/aimap')
 source('private.R')
 fileName <- '2019_locations.txt'
 locs <- readChar(fileName, file.info(fileName)$size)
@@ -34,49 +34,73 @@ locs2020mod <- read.csv('locs2020geo_mod.csv') %>%
 locs2020noPoint <- locs2020mod %>% filter(is.na(lat))
 
 # load continents
+devtools::install_github('thomasp85/ggfx')
+install.packages('textshaping')
+p <- st_read('locs2020_w_airegions.shp') %>% 
+  st_transform(3857)
 
-p <- st_read('locs2020_w_airegions.shp')
-
-world <- ne_countries(scale = "medium", returnclass = "sf") %>% 
+world <- ne_countries(scale = 50, returnclass = "sf") %>% 
   st_transform(54009)
+
 grats <- st_read('ne_10m_graticules_all/ne_10m_graticules_5.shp') %>% 
   st_transform(54009)
+
+a <- p %>% st_buffer(1000000) %>% st_intersects()
+# x <- unique(a)[[1]]
+p.grp <- do.call(rbind,lapply(unique(a), function(x) {
+  centroid <- st_centroid( p[x,] %>% st_combine() ) %>% st_sf
+  centroid$num <- paste0(p[x,]$num,collapse = ', ')
+  centroid$all_id <- length(p[x,]$num)
+  return(centroid)
+})) %>% st_transform(54009)
+
+require(rayshader)
+p.df <- st_coordinates(p.grp) %>% as.data.frame() %>% 
+  mutate(all_id = p.grp$all_id)
+
+p.plot <- ggplot() + 
+  geom_sf(data = world, lwd=0) + 
+  geom_point(data=p.df, aes(x = X, y=Y)) + 
+  geom_text_repel(data = p.df, aes(x = X, y=Y,label=all_id),
+           size=2) + 
+  theme_bw() + 
+  theme(legend.position = 'none',
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
+
+p.plot <- ggplot() + 
+  geom_sf(data = world %>% st_transform(3857), aes(fill=pop_est))
+rayshader::plot_gg(p.plot,multicore=TRUE,height_aes = 'fill')
+render_snapshot()
 gb <- p %>% filter(AI_Region == 'Britain and Ireland') %>% 
   st_transform(54009)
 
-bbox <- st_bbox(st_buffer(gb,100000))
 
-ggplot() + 
-  geom_sf(data = world, aes(fill = region_wb)) + 
-  geom_sf(data=gb) + 
-  geom_sf_label(data=gb,aes(label = num)) +
-  coord_sf(xlim = c(bbox$xmin, bbox$xmax), ylim = c(bbox$ymin, bbox$ymax), expand = FALSE) + 
-  theme(legend.position = 'none')
+bbox <- st_bbox(st_buffer(gb,100000))
 
 gb.df <- st_coordinates(gb) %>% as.data.frame() %>% 
   mutate(num = gb$num)
 
-gbplot <- ggplot() + 
-  geom_sf(data = world, aes(fill = region_wb)) + 
-  geom_text_repel(data = gb.df, aes(x = X, y=Y,label=num),
-                  segment.colour = 'grey') + 
+gp <- ggplot() + 
+  geom_sf(data = world, lwd=0) + 
+  geom_label_repel(data = gb.df, aes(x = X, y=Y,label=num),
+                  segment.colour = 'grey',
+                  max.overlaps = 50,
+                  label.padding = 0.15,
+                  label.size = 0.15,
+                  size=2) + 
   geom_point(data=gb.df, aes(x = X, y=Y)) + 
   coord_sf(xlim = c(bbox$xmin, bbox$xmax), ylim = c(bbox$ymin, bbox$ymax), expand = FALSE) + 
-  theme(legend.position = 'none')
+  theme_bw() + 
+  theme(legend.position = 'none',
+        axis.title.x = element_blank(),
+        axis.title.y = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank())
 
-remotes::install_github('slowkow/ggrepel')
-
-a <- ggplot_build(gbplot)
-a$plot$layers
-
-a$layout$train_position
-
-ggplot() + 
-  coord_sf(data=world$geometry)
-require(devtools)
-require(sf)
-Sys.setenv(R_REMOTES_STANDALONE="true")
-remotes::install_github("yutannihilation/ggsflabel")
+ggsave(gp, file='out.svg',width=8.3,height=11.7,units='in')
 
 continents <- st_read('https://gist.githubusercontent.com/hrbrmstr/91ea5cc9474286c72838/raw/59421ff9b268ff0929b051ddafafbeb94a4c1910/continents.json')
 locs2020sf <- locs2020mod[complete.cases(locs2020mod),] %>%
